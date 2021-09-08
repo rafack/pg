@@ -26,38 +26,38 @@ EBO tem o mesmo objetivo que o VBO, porém ele armazena os índices que represen
 ```cpp
 int setupGeometry()
 {
-   	GLfloat vertices[] = {
-  		// posições
-        -0.75, -0.625, 0.0,
-   		0.75, -0.375, 0.0,
- 		0.0, 0.75, 0.0,
-   		// cores
-   		0.0, 1.0, 0.0,
-   		0.0, 0.0, 1.0,
-   		1.0, 0.0, 0.0,
-    	};
+    GLfloat vertices[] = {
+    // posições
+    -0.75, -0.625, 0.0,
+    0.75, -0.375, 0.0,
+    0.0, 0.75, 0.0,
+    // cores
+    0.0, 1.0, 0.0,
+    0.0, 0.0, 1.0,
+    1.0, 0.0, 0.0,
+    };
 
-    	GLuint VBO, VAO;
+    GLuint VBO, VAO;
 
-    	glGenBuffers(1, &VBO);
-    	glBindBuffer(GL_ARRAY_BUFFER, VBO);
-    	glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
+    glGenBuffers(1, &VBO);
+    glBindBuffer(GL_ARRAY_BUFFER, VBO);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
+    
+    glGenVertexArrays(1, &VAO);
+    glBindVertexArray(VAO);
 
-    	glGenVertexArrays(1, &VAO);
-    	glBindVertexArray(VAO);
-    	
-    	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(GLfloat), (GLvoid*)0);
-    	glEnableVertexAttribArray(0);
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(GLfloat), (GLvoid*)0);
+    glEnableVertexAttribArray(0);
 
-    	glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(GLfloat), (GLvoid*)(9 * sizeof(GLfloat)));
-    	glEnableVertexAttribArray(1);
+    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(GLfloat), (GLvoid*)(9 * sizeof(GLfloat)));
+    glEnableVertexAttribArray(1);
 
-    	glBindBuffer(GL_ARRAY_BUFFER, VBO);
+    glBindBuffer(GL_ARRAY_BUFFER, VBO);
 
-    	glBindVertexArray(0);
+    glBindVertexArray(0);
 
-    	return VAO;
-    }
+    return VAO;
+}
 ```
 
 **b. Como estes atributos seriam identificados no vertex shader?**
