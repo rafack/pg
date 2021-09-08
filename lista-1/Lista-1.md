@@ -82,11 +82,27 @@ void main()
 
 **a. Apenas com o polígono preenchido**
 
+[Resolução (arquivo cpp)](./exercicio-6-a.cpp)
+
+![imagem-exercicio-6-a](./exercicio-6-a.png)
+
 **b. Apenas com contorno**
+
+[Resolução (arquivo cpp)](./exercicio-6-b.cpp)
+
+![imagem-exercicio-6-b](./exercicio-6-b.png)
 
 **c. Apenas como pontos**
 
+[Resolução (arquivo cpp)](./exercicio-6-c.cpp)
+
+![imagem-exercicio-6-c](./exercicio-6-c.png)
+
 **d. Com as 3 formas de desenho juntas**
+
+[Resolução (arquivo cpp)](./exercicio-6-d.cpp)
+
+![imagem-exercicio-6-d](./exercicio-6-d.png)
 
 
 **7. Faça o desenho de um círculo na tela.**
