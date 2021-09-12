@@ -106,10 +106,15 @@ void main()
 
 
 **7. Faça o desenho de um círculo na tela.**
+[Resolução (arquivo cpp)](./exercicio-7.cpp)
+
+![imagem-exercicio-7](./exercicio-7.png)
 
 
 **8. Faça o passo-a-passo para criar o triângulo com cores diferentes em cada vértice (prática do exercício 5).**
+[Resolução (arquivo cpp)](./exercicio-8.cpp)
 
+![imagem-exercicio-6-a](./exercicio-8.png)
 
 **9. Faça um desenho em um papel quadriculado (pode ser no computador mesmo) e reproduza-o utilizando primitivas em OpenGL. Neste exercício você poderá criar mais de um VAO e fazer mais de uma chamada de desenho para poder utilizar primitivas diferentes, se necessário.**
 
