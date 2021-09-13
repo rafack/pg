@@ -106,12 +106,14 @@ void main()
 
 
 **7. Faça o desenho de um círculo na tela.**
+
 [Resolução (arquivo cpp)](./exercicio-7.cpp)
 
 ![imagem-exercicio-7](./exercicio-7.png)
 
 
 **8. Faça o passo-a-passo para criar o triângulo com cores diferentes em cada vértice (prática do exercício 5).**
+
 [Resolução (arquivo cpp)](./exercicio-8.cpp)
 
 ![imagem-exercicio-6-a](./exercicio-8.png)
@@ -120,3 +122,12 @@ void main()
 
 
 **10. Implemente (pode pegar do tutorial) uma classe para tratar os shaders a partir de arquivos.**
+
+- [Utilizando a abstração do Shader (Source.cpp)](./exercicio-10-Source.cpp)
+
+- [Header File (shader.h)](./exercicio-10-shader.h)
+
+- [Vertex Shader Source File (vertex_shader.vs)](./exercicio-10-vertex_shader.vs)
+
+- [Fragment Shader Source File (fragment_shader.fs)](./exercicio-10-fragment_shader.fs)
+
