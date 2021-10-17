@@ -103,22 +103,22 @@ void key_callback(GLFWwindow* window, int key, int scancode, int action, int mod
 
 	if (key == GLFW_KEY_DOWN && action == GLFW_PRESS) 
 	{
-		projection = glm::translate(projection, glm::vec3(0.0, -0.5, 0.0));
+		projection = glm::translate(projection, glm::vec3(0.0, -0.1, 0.0));
 	}	
 	
 	if (key == GLFW_KEY_UP && action == GLFW_PRESS) 
 	{
-		projection = glm::translate(projection, glm::vec3(0.0, 0.5, 0.0));
+		projection = glm::translate(projection, glm::vec3(0.0, 0.1, 0.0));
 	}
 	
 	if (key == GLFW_KEY_RIGHT && action == GLFW_PRESS) 
 	{
-		projection = glm::translate(projection, glm::vec3(0.5, 0.0, 0.0));
+		projection = glm::translate(projection, glm::vec3(0.1, 0.0, 0.0));
 	}
 	
 	if (key == GLFW_KEY_LEFT && action == GLFW_PRESS) 
 	{
-		projection = glm::translate(projection, glm::vec3(-0.5, 0.0, 0.0));
+		projection = glm::translate(projection, glm::vec3(-0.1, 0.0, 0.0));
 	}
 
 }

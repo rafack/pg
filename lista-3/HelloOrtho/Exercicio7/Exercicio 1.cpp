@@ -54,13 +54,13 @@ int main()
 
 	glm::mat4 projection = glm::mat4(1);
 	glm::mat4 trans = glm::mat4(1);
-	glm::mat4 rot = glm::mat4(1);
-	glm::mat4 sca = glm::mat4(1);
+	glm::mat4 rotate = glm::mat4(1);
+	glm::mat4 scale = glm::mat4(1);
 
 	projection = glm::ortho(-1.0, 1.0, -1.0, 1.0, -1.0, 1.0);
 	trans = glm::ortho(1.3, -1.3, -1.3, 1.3, -1.0, 1.0);
-	rot = glm::rotate(projection, glm::radians(180.0f), glm::vec3(0.0, 0.0, 1.0));
-	sca = glm::scale(projection, glm::vec3(0.4, 0.3, 1.0));
+	rotate = glm::rotate(projection, glm::radians(180.0f), glm::vec3(0.0, 0.0, 1.0));
+	scale = glm::scale(projection, glm::vec3(0.4, 0.3, 1.0));
 
 	GLuint VAO = setupGeometry();
 
@@ -89,12 +89,12 @@ int main()
 		
 		
 		shader->setVec4("inputColor", 0.2, 0.0, 0.2);
-		shader->setMat4("projection", glm::value_ptr(rot));
+		shader->setMat4("projection", glm::value_ptr(rotate));
 		glDrawArrays(GL_TRIANGLES, 0, 3);
 
 
 		shader->setVec4("inputColor", 0.9, 0.8, 0.2);
-		shader->setMat4("projection", glm::value_ptr(sca));
+		shader->setMat4("projection", glm::value_ptr(scale));
 		glDrawArrays(GL_TRIANGLES, 0, 3);
 
 		// Troca os buffers da tela
