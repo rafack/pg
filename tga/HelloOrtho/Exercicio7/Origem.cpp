@@ -117,9 +117,6 @@ void key_callback(GLFWwindow* window, int key, int scancode, int action, int mod
 		inicializarObjetos();
 		pontuacao = 0;
 	}
-	
-	if (key == GLFW_KEY_P && action == GLFW_PRESS)
-		gameover = true;
 
 	personagem.update();
 	personagem.draw();
@@ -151,9 +148,8 @@ void carregarGraficos()
 
 void inicializarObjetos()
 {
-	background.setShader(shader);
-
 	background.initialize();
+	background.setShader(shader);
 	background.setTexture("./textures/room.jpg");
 	background.setDimensions(glm::vec3(2.0, 2.0, 0.0));
 
