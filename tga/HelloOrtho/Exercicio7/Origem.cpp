@@ -16,6 +16,8 @@
 #define METADE_LARGURA_BOLINHA 0.040909
 #define METADE_ALTURA_BOLINHA 0.064286
 
+#define LIMITE_INFERIOR_JANELA -1.0
+
 using namespace std;
 
 const GLuint WIDTH = 1100, HEIGHT = 700;
@@ -29,6 +31,7 @@ Object personagem;
 Object bolinha;
 
 bool gameover = false;
+int pontuacao = 0;
 
 void key_callback(GLFWwindow* window, int key, int scancode, int action, int mode);
 
@@ -37,6 +40,8 @@ void inicializarObjetos();
 
 void verificarColisao();
 void tratarColisao();
+
+void finalizarJogo();
 
 int main()
 {
@@ -70,21 +75,19 @@ int main()
 		
 		if (!gameover)
 		{
-		if (bolinha.getPosY() > -1) {
-			bolinha.setPosition(glm::vec3(bolinha.getPosX(), bolinha.getPosY() - 0.0005, 0.0));
-		}
-		else
-		{
-			bolinha.setPosition(glm::vec3(0.0, 1.0, 0.0));
-			bolinha.posicaoAleatoriaEmX();
-		}
-		}
-
-		bolinha.update();
-		bolinha.draw();
-
-		if(!gameover)
+			if (bolinha.getPosY() > LIMITE_INFERIOR_JANELA) {
+				bolinha.setPosition(glm::vec3(bolinha.getPosX(), bolinha.getPosY() - 0.0005, 0.0));
+			}
+			else
+			{
+				finalizarJogo();
+			}
+			
+			bolinha.update();
+			bolinha.draw();
+			
 			verificarColisao();
+		}
 
 		glfwSwapBuffers(window);
 	}
@@ -98,12 +101,12 @@ void key_callback(GLFWwindow* window, int key, int scancode, int action, int mod
 	if (key == GLFW_KEY_ESCAPE && action == GLFW_PRESS)
 		glfwSetWindowShouldClose(window, GL_TRUE);
 
-	if (key == GLFW_KEY_RIGHT && action == GLFW_PRESS)
+	if (key == GLFW_KEY_RIGHT)
 	{
 		personagem.moverParaDireita();
 	}
 
-	if (key == GLFW_KEY_LEFT && action == GLFW_PRESS)
+	if (key == GLFW_KEY_LEFT)
 	{
 		personagem.moverParaEsquerda();
 	}
@@ -112,6 +115,7 @@ void key_callback(GLFWwindow* window, int key, int scancode, int action, int mod
 	{
 		gameover = false;
 		inicializarObjetos();
+		pontuacao = 0;
 	}
 	
 	if (key == GLFW_KEY_P && action == GLFW_PRESS)
@@ -169,7 +173,13 @@ void inicializarObjetos()
 
 void verificarColisao()
 {
-	if (bolinha.getPosY()- METADE_ALTURA_BOLINHA <= personagem.getPosY() + METADE_ALTURA_PERSONAGEM)
+	double limiteSuperiorPersonagem = personagem.getPosY() - METADE_ALTURA_PERSONAGEM;
+	double limiteInferiorPersonagem = personagem.getPosY() + METADE_ALTURA_PERSONAGEM;
+
+	double limiteSuperiorBolinha = bolinha.getPosY() - METADE_ALTURA_BOLINHA;
+	double limiteInferiorBolinha = bolinha.getPosY() + METADE_ALTURA_BOLINHA;
+
+	if (limiteSuperiorBolinha <= limiteInferiorPersonagem && limiteInferiorBolinha >= limiteSuperiorPersonagem)
 	{
 		double limiteEsquerdoPersonagem = personagem.getPosX() - METADE_LARGURA_PERSONAGEM;
 		double limiteDireitoPersonagem = personagem.getPosX() + METADE_LARGURA_PERSONAGEM;
@@ -187,19 +197,24 @@ void verificarColisao()
 
 void tratarColisao()
 {
+	pontuacao++;
+	bolinha.posicaoAleatoriaEmX();
+}
+
+void finalizarJogo() {
 	gameover = true;
 
+	printf("Sua pontuacao foi: %d\n", pontuacao);
+
 	bolinha.setPosition(glm::vec3(-2.0, -2.0, 0.0));
-	background.setTexture("./textures/the-end.png");
-	
 	bolinha.update();
 	bolinha.draw();
 
+	background.setTexture("./textures/the-end.png");
 	background.update();
 	background.draw();
-	
+
 	personagem.setPosition(glm::vec3(-2.0, -2.0, 0.0));
-	
 	personagem.update();
 	personagem.draw();
 }

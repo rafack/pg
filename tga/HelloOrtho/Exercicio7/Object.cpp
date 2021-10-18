@@ -16,6 +16,7 @@ void Object::initialize()
 		-0.5f, -0.5f, 0.0f,  0.0f, 0.0f, 1.0f,   0.0f, 0.0f, // bottom left
 		-0.5f,  0.5f, 0.0f,  1.0f, 1.0f, 0.0f,   0.0f, 1.0  // top left 
 	};
+
 	unsigned int indices[] = {
 	0, 1, 3, // first triangle
 	1, 2, 3  // second triangle
@@ -50,8 +51,8 @@ void Object::initialize()
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
 	model = glm::mat4(1);
-	scale = glm::vec3(1.0,1.0,1.0);
-	position = glm::vec3(0.0,0.0,0.0);
+	scale = glm::vec3(1.0, 1.0, 1.0);
+	position = glm::vec3(0.0, 0.0, 0.0);
 	angle = 0.0;
 }
 
@@ -79,7 +80,6 @@ void Object::draw()
 
 void Object::setTexture(string pathname)
 {
-
 	// Gera o identificador da textura na memória 
 	glGenTextures(1, &texID);
 	glBindTexture(GL_TEXTURE_2D, texID);
@@ -163,8 +163,7 @@ void Object::posicaoAleatoriaEmX()
 	re.seed(std::chrono::system_clock::now().time_since_epoch().count());
 	
 	double randomPosX = unif(re);
+	double topoJanela = 1.0;
 
-	setPosition(glm::vec3(randomPosX, 
-		this->position.y,
-		0.0));
+	setPosition(glm::vec3(randomPosX, topoJanela, 0.0));
 }
