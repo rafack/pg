@@ -37,6 +37,7 @@ int main()
 	shader->use();
 	shader->setInt("cor", -1);
 	shader->setVec4("corColorizadora", 0.675, 0.341, 0.501);
+	shader->setVec2("dimensoesTela", WIDTH, HEIGHT);
 
 	inicializarObjetos();
 
@@ -111,7 +112,7 @@ void inicializarObjetos()
 {
 	background.initialize();
 	background.setShader(shader);
-	background.setTexture("./textures/beach-bg.png");
+	background.setTexture("./textures/green-bg.png");
 	background.setDimensions(glm::vec3(2.0, 2.0, 0.0));
 }
 
