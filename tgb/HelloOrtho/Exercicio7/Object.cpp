@@ -52,7 +52,7 @@ void Object::initialize()
 
 	model = glm::mat4(1);
 	scale = glm::vec3(1.0, 1.0, 1.0);
-	position = glm::vec3(0.0, 0.0, 0.0);
+	position = glm::vec3(0.5, 0.5, 0.0);
 	angle = 0.0;
 }
 
@@ -142,4 +142,34 @@ void Object::setScale(glm::vec3 matrix, bool reset)
 		model = glm::mat4(1);
 	}
 	model = glm::scale(model, matrix);
+}
+
+glm::vec3 Object::getScale()
+{
+	return this->scale;
+}
+
+float Object::getMetadeTamanho()
+{
+	return (this->metadeTamanhoEmPixels);
+}
+
+void Object::moverParaDireita()
+{
+	setPosition(glm::vec3(this->getPosX() + 0.05, this->getPosY(), 0.0));
+}
+
+void Object::moverParaEsquerda()
+{
+	setPosition(glm::vec3(this->getPosX() - 0.05, this->position.y, 0.0));
+}
+
+void Object::moverParaCima()
+{
+	setPosition(glm::vec3(this->getPosX(), this->getPosY() + 0.05, 0.0));
+}
+
+void Object::moverParaBaixo()
+{
+	setPosition(glm::vec3(this->getPosX(), this->position.y - 0.05, 0.0));
 }
