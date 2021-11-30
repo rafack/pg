@@ -7,13 +7,19 @@
 #include <fstream>
 #include <sstream>
 #include <iostream>
+#include <string>
+
+using namespace std;
 
 class Shader
 {
 public:
     unsigned int ID;
+    string nome;
+    string getNome() { return this->nome; }
+    void setNome(string nome) { this->nome = nome; }
     // Construtor
-    Shader()
+    Shader(string fragmentShader_path)
     {
         // Recuperar código fonte do vertex e fragment shader a partir dos arquivos
         std::string vertexCode;
@@ -29,7 +35,7 @@ public:
         try
         {
             vShaderFile.open("./shaders/vertex_shader.vs");
-            fShaderFile.open("./shaders/fragment_shader.fs");
+            fShaderFile.open(fragmentShader_path);
             std::stringstream vShaderStream, fShaderStream;
 
             // Ler arquivos e gravar nos streams
@@ -101,6 +107,11 @@ public:
     void setVec4(const std::string& name, float v1, float v2, float v3) const
     {
         glUniform4f(glGetUniformLocation(ID, name.c_str()), v1, v2, v3, 1.0);
+    }
+
+    void setVec2(const std::string& name, float v1, float v2) const
+    {
+        glUniform2f(glGetUniformLocation(ID, name.c_str()), v1, v2);
     }
 
 private:

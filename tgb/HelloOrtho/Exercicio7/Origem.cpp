@@ -18,8 +18,15 @@ using namespace std;
 const GLuint WIDTH = 1280, HEIGHT = 720;
 GLFWwindow* window;
 
+vector <Shader*> shaders;
 Shader* shader;
-
+#define SHADER_FILTRO_BINARIZACAO "./shaders/fragment_shader-binarizacao.fs"
+#define SHADER_FILTRO_COLORIZACAO "./shaders/fragment_shader-colorizacao.fs"
+#define SHADER_FILTRO_GRAYSCALE "./shaders/fragment_shader-grayscale.fs"
+#define SHADER_FILTRO_INVERSAO "./shaders/fragment_shader-inversao.fs"
+#define SHADER_FILTRO_MEUFILTRO "./shaders/fragment_shader-meufiltro.fs"
+#define SHADER_FILTRO_RGB "./shaders/fragment_shader-rgb.fs"
+#define SHADER_FILTRO_VIGNETE "./shaders/fragment_shader-vignete.fs"
 
 Object telaInicial;
 
@@ -28,6 +35,7 @@ bool isStickerSelecionado;
 Object barraSuperior;
 Object barraInferior;
 Object imagem;
+vector <Object> previasFiltros;
 vector <Object> stickers;
 vector <Object> stickersEmUso;
 vector <Object> stickerSelecionado;
@@ -41,6 +49,9 @@ const float METADE_STICKER_TAMANHO4_PIXELS = 64.0;
 
 double xCursor, yCursor;
 
+
+int main();
+
 void key_callback(GLFWwindow* window, int key, int scancode, int action, int mode);
 void mouse_button_callback(GLFWwindow* window, int button, int action, int mods);
 void carregarGraficos();
@@ -48,15 +59,26 @@ void iniciarObjetos();
 void solicitarArquivoImagem();
 void mostrarTelaInicial();
 void definirStickers();
+void criarShaders();
+//void criarPreviasFiltros();
+
+enum cores { R, G, B };
+void aplicarFiltro(int cor);
 
 int main()
 {
 	carregarGraficos();
 
-	shader = new Shader();
+	criarShaders();
+	shader = new Shader("./shaders/fragment_shader.fs");
+	shader = new Shader(SHADER_FILTRO_RGB);
 	shader->use();
+	shader->setInt("cor", -1);
+	shader->setVec4("corColorizadora", 0.675, 0.341, 0.501);
+	shader->setVec2("dimensoesTela", WIDTH, HEIGHT);
 
 	iniciarObjetos();
+	//criarPreviasFiltros();
 
 	while (!glfwWindowShouldClose(window))
 	{
@@ -72,6 +94,7 @@ int main()
 		glm::mat4 projection = glm::mat4(1);
 		projection = glm::ortho(0.0, 1.0, 0.0, 1.0, -1.0, 1.0);
 		shader->setMat4("projection", glm::value_ptr(projection));
+		
 		
 		if (!arquivoInformado)
 		{
@@ -105,6 +128,12 @@ int main()
 
 				//printf("stickers em uso size %d \n", stickersEmUso.size());
 			}
+
+			//for (Object previa : previasFiltros)
+			//{
+			//	previa.update();
+			//	previa.draw();
+			//}
 		}//else
 		
 		glfwSwapBuffers(window);
@@ -118,6 +147,34 @@ void key_callback(GLFWwindow* window, int key, int scancode, int action, int mod
 {
 	if (key == GLFW_KEY_ESCAPE && action == GLFW_PRESS)
 		glfwSetWindowShouldClose(window, GL_TRUE);
+
+	if (key == GLFW_KEY_R && action == GLFW_PRESS)
+	{
+		aplicarFiltro(R);
+	}
+
+		if (key == GLFW_KEY_G && action == GLFW_PRESS)
+			aplicarFiltro(G);
+
+		if (key == GLFW_KEY_B && action == GLFW_PRESS)
+			aplicarFiltro(B);
+
+	if (key == GLFW_KEY_N && action == GLFW_PRESS)
+		shader->setInt("cor", -1);
+
+	if (key == GLFW_KEY_J && action == GLFW_PRESS)
+	{
+		for (Shader* shader : shaders)
+		{
+			if (shader->getNome() == "RGB")
+			{
+				imagem.setShader(shader);
+			}
+		}
+	}
+
+	imagem.update();
+	imagem.draw();
 
 	if (isStickerSelecionado)
 	{
@@ -168,8 +225,7 @@ void mouse_button_callback(GLFWwindow* window, int button, int action, int mods)
 	if (button == GLFW_MOUSE_BUTTON_LEFT && action == GLFW_PRESS)
 	{
 		glfwGetCursorPos(window, &xCursor, &yCursor);
-		double xCursorNormalizado = xCursor / WIDTH;
-		double yCursorNormalizado = 1.0 - yCursor / HEIGHT;
+		printf("posicao cursor: x=%d, y=%d\n", xCursor, yCursor);
 
 		for (Object sticker : stickers)
 		{
@@ -179,7 +235,6 @@ void mouse_button_callback(GLFWwindow* window, int button, int action, int mods)
 				if (720.0 - yCursor >= (sticker.getPosY() * 720 - sticker.getMetadeTamanho())
 					&& 720.0 - yCursor <= (sticker.getPosY() * 720 + sticker.getMetadeTamanho()))
 				{
-					printf("alo");
 					Object obj;
 					obj.initialize();
 					obj.setShader(shader);
@@ -253,8 +308,8 @@ void iniciarObjetos()
 	barraInferior.initialize();
 	barraInferior.setShader(shader);
 	barraInferior.setTexture("./textures/barra-inferior.png");
-	barraInferior.setPosition(glm::vec3(0.7, 0.06, 1.0));
-	barraInferior.setDimensions(glm::vec3(1.4, 0.18, 1.0));
+	barraInferior.setPosition(glm::vec3(0.558, 0.06, 1.0));
+	barraInferior.setDimensions(glm::vec3(1.13, 0.18, 1.0));
 	
 	imagem.initialize();
 	imagem.setShader(shader);
@@ -335,4 +390,40 @@ void definirStickers()
 	stickers[10].setTexture("./textures/stickers/vacation.png");
 	stickers[10].setNome("./textures/stickers/vacation.png");
 	stickers[10].setMetadeTamanhoEmPixels(METADE_STICKER_TAMANHO4_PIXELS);
+}
+
+void aplicarFiltro(int cor)
+{
+	imagem.getShader()->setInt("cor", cor);
+}
+
+void criarShaders()
+{
+	Shader* shaderBinarizacao = new Shader(SHADER_FILTRO_BINARIZACAO);
+	shaderBinarizacao->setNome("Binarização");
+	shaders.push_back(shaderBinarizacao);
+	
+	Shader* shaderColor = new Shader(SHADER_FILTRO_COLORIZACAO);
+	shaderColor->setNome("Colorização");
+	shaders.push_back(shaderColor);
+
+	Shader* shaderInversao = new Shader(SHADER_FILTRO_INVERSAO);
+	shaderInversao->setNome("Inversão");
+	shaders.push_back(shaderInversao);
+
+	Shader* rgb = new Shader(SHADER_FILTRO_RGB);
+	rgb->setNome("RGB");
+	shaders.push_back(rgb);
+
+	Shader* gray = new Shader(SHADER_FILTRO_GRAYSCALE);
+	gray->setNome("Grayscale");
+	shaders.push_back(gray);
+
+	Shader* meufiltro = new Shader(SHADER_FILTRO_MEUFILTRO);
+	meufiltro->setNome("MeuFiltro");
+	shaders.push_back(meufiltro);
+	
+	Shader* vignete = new Shader(SHADER_FILTRO_VIGNETE);
+	vignete->setNome("Vignete");
+	shaders.push_back(vignete);
 }

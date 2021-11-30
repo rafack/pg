@@ -34,6 +34,7 @@ public:
 	string getNome() { return this->nome; };
 	void setIsSelecionado(bool isSelecionado) { this->isSelecionado = isSelecionado;  };
 	bool getIsSelecionado() { return this->isSelecionado;  };
+	Shader* getShader() { return shader; }
 
 protected:
 	void setRotation(float angle, glm::vec3 axis, bool reset = false);
