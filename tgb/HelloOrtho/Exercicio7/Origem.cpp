@@ -203,11 +203,6 @@ void mouse_button_callback(GLFWwindow* window, int button, int action, int mods)
 	{
 		glfwGetCursorPos(window, &xCursor, &yCursor);
 
-		// 1º Filtro-> inversão (x=11.7px - 162.7px)
-		//151px largura
-		//y= 9px - 90px
-		// 81px altura
-					//metade img + 11.7(onde começa)
 		for (int i = 0; i < 7; i++)
 		{
 			if (xCursor >= 11.7 + (i * 145) && xCursor <= 87.2 + 75.5 + (i * 145))
@@ -433,23 +428,6 @@ void criarShaders()
 	vignete->setNome("Vignete");
 	shaders.push_back(vignete);
 }
-
-//void criarPreviasFiltros()
-//{
-//	int i = 0; 
-//	for (Shader* shader : shaders)
-//	{
-//		Object* previa = new Object();
-//		previa->initialize();
-//		previa->setShader(shader);
-//		previa->setTexture(caminhoArquivoImagem);
-//		previa->setPosition(glm::vec3(0.02 + espacoEntreFiltros * i, 0.1, 0.0));
-//		previa->setDimensions(glm::vec3(0.07, 0.1, 1.0));
-//		previasFiltros.push_back(previa);
-//		i++;
-//		printf("i= %d", i);
-//	}
-//}
 
 Shader* getShaderByIdx(int i) 
 {
