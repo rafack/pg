@@ -28,39 +28,45 @@ Shader* shader;
 #define SHADER_FILTRO_RGB "./shaders/fragment_shader-rgb.fs"
 #define SHADER_FILTRO_VIGNETE "./shaders/fragment_shader-vignete.fs"
 
-Object telaInicial;
+float espacoEntreFiltros = 0.09;
 
-bool arquivoInformado;
-bool isStickerSelecionado;
+Object telaInicial;
 Object barraSuperior;
 Object barraInferior;
 Object imagem;
-vector <Object> previasFiltros;
+
 vector <Object> stickers;
 vector <Object> stickersEmUso;
 vector <Object> stickerSelecionado;
+vector <Object> previasFiltros;
 
-const int QTD_STICKERS = 11;
-float espacoEntreStickers = 0.09;
 const float METADE_STICKER_TAMANHO1_PIXELS = 48.0;
 const float METADE_STICKER_TAMANHO2_PIXELS = 58.0;
 const float METADE_STICKER_TAMANHO3_PIXELS = 60.0;
 const float METADE_STICKER_TAMANHO4_PIXELS = 64.0;
 
-double xCursor, yCursor;
+const int QTD_STICKERS = 11;
+float espacoEntreStickers = 0.09;
 
+char caminhoArquivoImagem[400];
+bool arquivoInformado;
+bool isStickerSelecionado;
+
+double xCursor, yCursor;
 
 int main();
 
 void key_callback(GLFWwindow* window, int key, int scancode, int action, int mode);
 void mouse_button_callback(GLFWwindow* window, int button, int action, int mods);
+
 void carregarGraficos();
 void iniciarObjetos();
 void solicitarArquivoImagem();
 void mostrarTelaInicial();
 void definirStickers();
 void criarShaders();
-//void criarPreviasFiltros();
+
+Shader* getShaderByIdx(int i);
 
 enum cores { R, G, B };
 void aplicarFiltro(int cor);
@@ -71,14 +77,12 @@ int main()
 
 	criarShaders();
 	shader = new Shader("./shaders/fragment_shader.fs");
-	shader = new Shader(SHADER_FILTRO_RGB);
 	shader->use();
 	shader->setInt("cor", -1);
 	shader->setVec4("corColorizadora", 0.675, 0.341, 0.501);
 	shader->setVec2("dimensoesTela", WIDTH, HEIGHT);
 
 	iniciarObjetos();
-	//criarPreviasFiltros();
 
 	while (!glfwWindowShouldClose(window))
 	{
@@ -125,16 +129,9 @@ int main()
 			{
 				sticker.update();
 				sticker.draw();
-
-				//printf("stickers em uso size %d \n", stickersEmUso.size());
 			}
 
-			//for (Object previa : previasFiltros)
-			//{
-			//	previa.update();
-			//	previa.draw();
-			//}
-		}//else
+		}
 		
 		glfwSwapBuffers(window);
 	}
@@ -149,32 +146,16 @@ void key_callback(GLFWwindow* window, int key, int scancode, int action, int mod
 		glfwSetWindowShouldClose(window, GL_TRUE);
 
 	if (key == GLFW_KEY_R && action == GLFW_PRESS)
-	{
 		aplicarFiltro(R);
-	}
 
-		if (key == GLFW_KEY_G && action == GLFW_PRESS)
-			aplicarFiltro(G);
+	if (key == GLFW_KEY_G && action == GLFW_PRESS)
+		aplicarFiltro(G);
 
-		if (key == GLFW_KEY_B && action == GLFW_PRESS)
-			aplicarFiltro(B);
+	if (key == GLFW_KEY_B && action == GLFW_PRESS)
+		aplicarFiltro(B);
 
 	if (key == GLFW_KEY_N && action == GLFW_PRESS)
 		shader->setInt("cor", -1);
-
-	if (key == GLFW_KEY_J && action == GLFW_PRESS)
-	{
-		for (Shader* shader : shaders)
-		{
-			if (shader->getNome() == "RGB")
-			{
-				imagem.setShader(shader);
-			}
-		}
-	}
-
-	imagem.update();
-	imagem.draw();
 
 	if (isStickerSelecionado)
 	{
@@ -185,7 +166,6 @@ void key_callback(GLFWwindow* window, int key, int scancode, int action, int mod
 			{
 				sticker.moverParaEsquerda();
 			}
-
 		}
 
 		if (key == GLFW_KEY_RIGHT && action == GLFW_PRESS)
@@ -195,7 +175,6 @@ void key_callback(GLFWwindow* window, int key, int scancode, int action, int mod
 			{
 				sticker.moverParaDireita();
 			}
-
 		}
 
 		if (key == GLFW_KEY_UP && action == GLFW_PRESS)
@@ -205,7 +184,6 @@ void key_callback(GLFWwindow* window, int key, int scancode, int action, int mod
 			{
 				sticker.moverParaCima();
 			}
-
 		}
 
 		if (key == GLFW_KEY_DOWN && action == GLFW_PRESS)
@@ -215,7 +193,6 @@ void key_callback(GLFWwindow* window, int key, int scancode, int action, int mod
 			{
 				sticker.moverParaBaixo();
 			}
-
 		}
 	}
 }
@@ -225,7 +202,25 @@ void mouse_button_callback(GLFWwindow* window, int button, int action, int mods)
 	if (button == GLFW_MOUSE_BUTTON_LEFT && action == GLFW_PRESS)
 	{
 		glfwGetCursorPos(window, &xCursor, &yCursor);
-		printf("posicao cursor: x=%d, y=%d\n", xCursor, yCursor);
+
+		// 1º Filtro-> inversão (x=11.7px - 162.7px)
+		//151px largura
+		//y= 9px - 90px
+		// 81px altura
+					//metade img + 11.7(onde começa)
+		for (int i = 0; i < 7; i++)
+		{
+			if (xCursor >= 11.7 + (i * 145) && xCursor <= 87.2 + 75.5 + (i * 145))
+			{
+				if (720.0 - yCursor <= 639.0)
+				{
+					imagem.setShader(getShaderByIdx(i));
+					imagem.update();
+					imagem.draw();
+					printf("nome do filtro %s", getShaderByIdx(i)->getNome().c_str());
+				}
+			}
+		}
 
 		for (Object sticker : stickers)
 		{
@@ -266,7 +261,6 @@ void mouse_button_callback(GLFWwindow* window, int button, int action, int mods)
 		}
 	}
 }
-
 
 void carregarGraficos()
 {
@@ -325,13 +319,25 @@ void iniciarObjetos()
 		stickers.push_back(obj);
 	}
 
+	for (int i = 0; i < 7; i++)
+	{
+		Shader* shaderInversao = new Shader(SHADER_FILTRO_INVERSAO);
+
+		Object obj;
+		obj.initialize();
+		obj.setShader(shader);
+		obj.setPosition(glm::vec3(0.05 + espacoEntreFiltros * i, 0.5, 1.0));
+		obj.setDimensions(glm::vec3(0.07, 0.1, 1.0));
+		obj.setTexture("./textures/tela-inicial.png");
+
+		previasFiltros.push_back(obj);
+	}
+
 		definirStickers();
 }
 
 void solicitarArquivoImagem()
 {
-	char caminhoArquivoImagem[400];
-
 	printf("Digite o caminho completo da imagem: ");
 	gets_s(caminhoArquivoImagem);
 
@@ -348,47 +354,47 @@ void mostrarTelaInicial()
 void definirStickers()
 {
 	stickers[0].setTexture("./textures/stickers/christmas-hat.png");
-	stickers[0].setNome("./textures/stickers/christmas-hat.png");
+	stickers[0].setTextureName("./textures/stickers/christmas-hat.png");
 	stickers[0].setMetadeTamanhoEmPixels(METADE_STICKER_TAMANHO4_PIXELS);
 
 	stickers[1].setTexture("./textures/stickers/flower.png");
-	stickers[1].setNome("./textures/stickers/flower.png");
+	stickers[1].setTextureName("./textures/stickers/flower.png");
 	stickers[1].setMetadeTamanhoEmPixels(METADE_STICKER_TAMANHO3_PIXELS);
 
 	stickers[2].setTexture("./textures/stickers/hang-loose.png");
-	stickers[2].setNome("./textures/stickers/hang-loose.png");
+	stickers[2].setTextureName("./textures/stickers/hang-loose.png");
 	stickers[2].setMetadeTamanhoEmPixels(METADE_STICKER_TAMANHO2_PIXELS);
 
 	stickers[3].setTexture("./textures/stickers/happy-ghost.png");
-	stickers[3].setNome("./textures/stickers/happy-ghost.png");
+	stickers[3].setTextureName("./textures/stickers/happy-ghost.png");
 	stickers[3].setMetadeTamanhoEmPixels(METADE_STICKER_TAMANHO4_PIXELS);
 
 	stickers[4].setTexture("./textures/stickers/happy-people.png");
-	stickers[4].setNome("./textures/stickers/happy-people.png");
+	stickers[4].setTextureName("./textures/stickers/happy-people.png");
 	stickers[4].setMetadeTamanhoEmPixels(METADE_STICKER_TAMANHO4_PIXELS);
 
 	stickers[5].setTexture("./textures/stickers/joystick.png");
-	stickers[5].setNome("./textures/stickers/joystick.png");
+	stickers[5].setTextureName("./textures/stickers/joystick.png");
 	stickers[5].setMetadeTamanhoEmPixels(METADE_STICKER_TAMANHO1_PIXELS);
 
 	stickers[6].setTexture("./textures/stickers/love.png");
-	stickers[6].setNome("./textures/stickers/love.png");
+	stickers[6].setTextureName("./textures/stickers/love.png");
 	stickers[6].setMetadeTamanhoEmPixels(METADE_STICKER_TAMANHO3_PIXELS);
 
 	stickers[7].setTexture("./textures/stickers/pizza.png");
-	stickers[7].setNome("./textures/stickers/pizza.png");
+	stickers[7].setTextureName("./textures/stickers/pizza.png");
 	stickers[7].setMetadeTamanhoEmPixels(METADE_STICKER_TAMANHO4_PIXELS);
 
 	stickers[8].setTexture("./textures/stickers/sleep.png");
-	stickers[8].setNome("./textures/stickers/sleep.png");
+	stickers[8].setTextureName("./textures/stickers/sleep.png");
 	stickers[8].setMetadeTamanhoEmPixels(METADE_STICKER_TAMANHO4_PIXELS);
 
 	stickers[9].setTexture("./textures/stickers/sports.png");
-	stickers[9].setNome("./textures/stickers/sports.png");
+	stickers[9].setTextureName("./textures/stickers/sports.png");
 	stickers[9].setMetadeTamanhoEmPixels(METADE_STICKER_TAMANHO4_PIXELS);
 
 	stickers[10].setTexture("./textures/stickers/vacation.png");
-	stickers[10].setNome("./textures/stickers/vacation.png");
+	stickers[10].setTextureName("./textures/stickers/vacation.png");
 	stickers[10].setMetadeTamanhoEmPixels(METADE_STICKER_TAMANHO4_PIXELS);
 }
 
@@ -426,4 +432,56 @@ void criarShaders()
 	Shader* vignete = new Shader(SHADER_FILTRO_VIGNETE);
 	vignete->setNome("Vignete");
 	shaders.push_back(vignete);
+}
+
+//void criarPreviasFiltros()
+//{
+//	int i = 0; 
+//	for (Shader* shader : shaders)
+//	{
+//		Object* previa = new Object();
+//		previa->initialize();
+//		previa->setShader(shader);
+//		previa->setTexture(caminhoArquivoImagem);
+//		previa->setPosition(glm::vec3(0.02 + espacoEntreFiltros * i, 0.1, 0.0));
+//		previa->setDimensions(glm::vec3(0.07, 0.1, 1.0));
+//		previasFiltros.push_back(previa);
+//		i++;
+//		printf("i= %d", i);
+//	}
+//}
+
+Shader* getShaderByIdx(int i) 
+{
+	Shader* shaderInversao = new Shader(SHADER_FILTRO_INVERSAO);
+	Shader* shaderBinarizacao = new Shader(SHADER_FILTRO_BINARIZACAO);
+	Shader* shaderRGB = new Shader(SHADER_FILTRO_RGB);
+	Shader* shaderColorizacao = new Shader(SHADER_FILTRO_COLORIZACAO);
+	Shader* shaderMeuFiltro = new Shader(SHADER_FILTRO_MEUFILTRO);
+	Shader* shaderGrayscale = new Shader(SHADER_FILTRO_GRAYSCALE);
+	Shader* shaderVignete = new Shader(SHADER_FILTRO_VIGNETE);
+
+	switch (i) {
+	case 0:
+		return shaderInversao;
+		break;
+	case 1:
+		return shaderBinarizacao;
+		break;
+	case 2:
+		return shaderColorizacao;
+		break;
+	case 3:
+		return shaderVignete;
+		break;
+	case 4:
+		return shaderGrayscale;
+		break;
+	case 5:
+		return shaderMeuFiltro;
+		break;
+	case 6:
+		return shaderRGB;
+		break;
+	}
 }

@@ -15,9 +15,12 @@ class Shader
 {
 public:
     unsigned int ID;
+    int numero;
     string nome;
     string getNome() { return this->nome; }
     void setNome(string nome) { this->nome = nome; }
+    void setNumero(int numero) { this->numero = numero; }
+    int getNumero(int numero) { return numero; }
     // Construtor
     Shader(string fragmentShader_path)
     {

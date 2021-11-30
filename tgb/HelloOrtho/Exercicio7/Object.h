@@ -30,7 +30,7 @@ public:
 	void moverParaEsquerda();
 	void moverParaCima();
 	void moverParaBaixo();
-	void setNome(string nome) { this->nome = nome;  };
+	void setTextureName(string nome) { this->nome = nome;  };
 	string getNome() { return this->nome; };
 	void setIsSelecionado(bool isSelecionado) { this->isSelecionado = isSelecionado;  };
 	bool getIsSelecionado() { return this->isSelecionado;  };
